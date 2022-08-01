@@ -1,0 +1,12 @@
+.report-content {
+  tbody + tbody tr:first-child th {
+    padding-top: 2rem;
+    padding-bottom: 0.5rem;
+  }
+
+  tfoot tr:first-child td {
+    font-weight: bold;
+    padding-top: 2rem;
+    padding-bottom: 0.5rem;
+  }
+}
