@@ -1,24 +1,15 @@
 import {useSelector} from "react-redux";
-import {accountKey, customerKey, selectCurrentRep, selectReportCustomers} from "./index";
-import {repKey} from "../reps";
+import {accountKey, customerKey, selectCustomerInvoices} from "./index";
 import InvoiceLink from "../../components/InvoiceLink";
+import React from "react";
 
-const Report = () => {
-    const rep = useSelector(selectCurrentRep);
-    const customers = useSelector(selectReportCustomers);
+const InvoiceReport = () => {
+    const customers = useSelector(selectCustomerInvoices);
 
-
-    if (!rep) {
-        return (
-            <div className="mt-3">
-                <h2>Select Sales Rep</h2>
-            </div>
-        );
-    }
 
     return (
         <div className="mt-3">
-            <h2>{repKey(rep)} {rep.SalespersonName}</h2>
+            <h3>Customer Invoices</h3>
             <table className="table table-sm table-sticky report-content">
                 <thead>
                 <tr>
@@ -27,12 +18,12 @@ const Report = () => {
                     <th>City</th>
                     <th>Date</th>
                     <th>Invoices</th>
-                    <th className="text-end">Sales Total</th>
+                    <th className="text-end">Invoice Total</th>
                 </tr>
                 </thead>
                 {Object.keys(customers).sort()
                     .map(key => (
-                        <tbody>
+                        <tbody key={key}>
                         <tr>
                             <th>{customerKey(customers[key])}</th>
                             <th colSpan={2}>{customers[key].BillToName}</th>
@@ -44,10 +35,10 @@ const Report = () => {
                             })}</th>
                         </tr>
                         {customers[key].invoices.map(row => (
-                            <tr>
+                            <tr key={row.InvoiceNo}>
                                 <td>{accountKey(row)}</td>
                                 <td>{row.ShipToName ?? row.BillToName}</td>
-                                <td>{row.ShipToCity}, {row.ShipToCity}</td>
+                                <td>{row.City}, {row.State} {row.ZipCode}</td>
                                 <td>{new Date(row.InvoiceDate).toLocaleDateString()}</td>
                                 <td><InvoiceLink invoiceNo={row.InvoiceNo}/></td>
                                 <td className="text-end">{row.SalesTotal.toLocaleString(undefined, {
@@ -73,4 +64,4 @@ const Report = () => {
     )
 }
 
-export default Report;
+export default React.memo(InvoiceReport);

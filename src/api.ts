@@ -1,7 +1,7 @@
 import {fetchJSON} from 'chums-components';
 import {SalespersonLookupResult} from 'chums-types'
 import {default as format} from 'date-fns/formatISO9075'
-import {RepReportData} from "./ducks/report/types";
+import {RepInvoiceReportData, RepItemReportData} from "./ducks/report/types";
 
 export async function fetchRepList():Promise<SalespersonLookupResult[]> {
     try {
@@ -19,21 +19,40 @@ export async function fetchRepList():Promise<SalespersonLookupResult[]> {
 }
 
 
-export async function fetchReportData(repKey: string, from:string, to: string):Promise<RepReportData[]> {
+export async function fetchInvoiceReportData(repKey: string, from:string, to: string):Promise<RepInvoiceReportData[]> {
     try {
-        const url = '/node-sage/api/CHI/safety/invoices/{rep}/{from-date}/{to-date}'
+        const url = '/api/sales/rep/safety/invoices/chums/{rep}/{from-date}/{to-date}'
             .replace('{rep}', encodeURIComponent(repKey))
             .replace('{from-date}', encodeURIComponent(format(new Date(from), {representation: 'date'})))
             .replace('{to-date}', encodeURIComponent(format(new Date(to), {representation: 'date'})));
-        const res = await fetchJSON<{response: {result: RepReportData[]}}>(url);
-        return res.response.result;
+        const {invoices} = await fetchJSON<{invoices: RepInvoiceReportData[]}>(url);
+        return invoices;
     } catch(err:unknown) {
 
         if (err instanceof Error) {
-            console.warn("fetchReport()", err.message);
+            console.warn("fetchInvoiceReportData()", err.message);
             return Promise.reject(err);
         }
-        console.warn("fetchReport()", err);
-        return Promise.reject(new Error('Error in fetchReport()'));
+        console.warn("fetchInvoiceReportData()", err);
+        return Promise.reject(new Error('Error in fetchInvoiceReportData()'));
+    }
+}
+
+export async function fetchItemData(repKey: string, from:string, to:string):Promise<RepItemReportData[]> {
+    try {
+        const url = '/api/sales/rep/chums/{rep}/{from-date}/{to-date}/items'
+            .replace('{rep}', encodeURIComponent(repKey))
+            .replace('{from-date}', encodeURIComponent(format(new Date(from), {representation: 'date'})))
+            .replace('{to-date}', encodeURIComponent(format(new Date(to), {representation: 'date'})));
+        const {result} = await fetchJSON<{result: RepItemReportData[]}>(url);
+        return result;
+    } catch(err:unknown) {
+
+        if (err instanceof Error) {
+            console.warn("fetchItemData()", err.message);
+            return Promise.reject(err);
+        }
+        console.warn("fetchItemData()", err);
+        return Promise.reject(new Error('Error in fetchItemData()'));
     }
 }

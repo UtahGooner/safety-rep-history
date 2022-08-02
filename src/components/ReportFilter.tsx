@@ -1,7 +1,7 @@
 import RepSelect from "../ducks/reps/RepSelect";
 import {useSelector} from "react-redux";
 import {
-    loadReportData,
+    loadInvoiceReportData, loadItemReportData,
     selectMaxDate,
     selectMinDate,
     selectReportLoading,
@@ -28,7 +28,8 @@ const ReportFilter = () => {
 
     const submitHandler = (ev: FormEvent) => {
         ev.preventDefault();
-        dispatch(loadReportData());
+        dispatch(loadInvoiceReportData());
+        dispatch(loadItemReportData());
     }
 
     return (
